@@ -1,4 +1,5 @@
-FROM ros:noetic
+# FROM ros:noetic
+FROM ubuntu:focal
 ENV DEBIAN_FRONTEND noninteractive
 LABEL Name=dreamvudocker Version=0.0.1
 # Avoid prompting for keyboard layout, which causes
@@ -10,12 +11,21 @@ LABEL Name=dreamvudocker Version=0.0.1
 RUN apt-get update \
     && apt-get install -q -y \
     --no-install-recommends \
+        lzma \
         wget \
         apt-utils \
         nano \
         vim \
         less \
         ack-grep \
+        sudo \
+        gnupg2 \
+        lsb-core \
+        lshw \
+        rsync \
+        dialog \
+        python \
+        python3-pip \
     && apt-get clean -q -y \
     && apt-get autoremove -q -y \
     && rm -rf /var/lib/apt/lists/*
@@ -104,31 +114,28 @@ RUN apt-get update \
 
 # # RUN dpkg -i $(find /var/nv-tensorrt-local-repo-${os}-${tag}/ -maxdepth 1 -type f -name "*.deb" | sort | xargs) ;
 
-# RUN apt-get update \
-#     && apt-get install -q -y \
-#     --no-install-recommends \
-#         tensorrt \
-#     && apt-get clean -q -y \
-#     && apt-get autoremove -q -y \
-#     && rm -rf /var/lib/apt/lists/*
-
-# pal installation requires this
 RUN apt-get update \
     && apt-get install -q -y \
     --no-install-recommends \
-        lshw \
-        rsync \
-        dialog \
-        python \
-        python3-pip \
+        qt5-default \
     && apt-get clean -q -y \
     && apt-get autoremove -q -y \
     && rm -rf /var/lib/apt/lists/*
 
+# pal installation requires this
+# RUN apt-get update \
+#     && apt-get install -q -y \
+#     --no-install-recommends \
+        
+#     && apt-get clean -q -y \
+#     && apt-get autoremove -q -y \
+#     && rm -rf /var/lib/apt/lists/*
+
 COPY ./pal .
 ENV DEBIAN_FRONTEND noninteractive
 RUN pip install openvino #[onnx,pytorch]==2022.1.0
-RUN ./pal
+ENV LD_LIBRARY_PATH=/opt/intel/openvino_2022.1.0.643/runtime/lib/intel64/:/opt/intel/openvino_2022.1.0.643/runtime/3rdparty/tbb/lib/:$LD_LIBRARY_PATH
+# RUN yes | ./pal
 
 # currently get error:
 # The following packages have unmet dependencies:
