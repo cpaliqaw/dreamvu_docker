@@ -1,4 +1,4 @@
-# FROM ros:noetic
+# FROM ros:noetic - I don't use this because "pal" installs ROS
 FROM ubuntu:focal
 ENV DEBIAN_FRONTEND noninteractive
 LABEL Name=dreamvudocker Version=0.0.1
@@ -8,12 +8,14 @@ LABEL Name=dreamvudocker Version=0.0.1
 # when copyting one from stack overflow, but it did after I copied it directly
 # from my own box - whitespace problems?
 # Install wget
+# RUN echo "#!/bin/sh\nexit 0" > /usr/sbin/policy-rc.d
+# https://unix.stackexchange.com/questions/432779/update-rc-d-warning-start-and-stop-actions-are-no-longer-supported-falling-ba
 RUN apt-get update \
     && apt-get install -q -y \
     --no-install-recommends \
+        apt-utils \
         lzma \
         wget \
-        apt-utils \
         nano \
         vim \
         less \
@@ -121,20 +123,16 @@ RUN apt-get update \
     && apt-get clean -q -y \
     && apt-get autoremove -q -y \
     && rm -rf /var/lib/apt/lists/*
+# To avoid problem: 
+# invoke-rc.d: could not determine current runlevel
 
-# pal installation requires this
-# RUN apt-get update \
-#     && apt-get install -q -y \
-#     --no-install-recommends \
-        
-#     && apt-get clean -q -y \
-#     && apt-get autoremove -q -y \
-#     && rm -rf /var/lib/apt/lists/*
 
 COPY ./pal .
 ENV DEBIAN_FRONTEND noninteractive
 RUN pip install openvino #[onnx,pytorch]==2022.1.0
 ENV LD_LIBRARY_PATH=/opt/intel/openvino_2022.1.0.643/runtime/lib/intel64/:/opt/intel/openvino_2022.1.0.643/runtime/3rdparty/tbb/lib/:$LD_LIBRARY_PATH
+
+
 # RUN yes | ./pal
 
 # currently get error:
