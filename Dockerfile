@@ -116,13 +116,14 @@ RUN apt-get update \
 
 # # RUN dpkg -i $(find /var/nv-tensorrt-local-repo-${os}-${tag}/ -maxdepth 1 -type f -name "*.deb" | sort | xargs) ;
 
-RUN apt-get update \
-    && apt-get install -q -y \
-    --no-install-recommends \
-        qt5-default \
-    && apt-get clean -q -y \
-    && apt-get autoremove -q -y \
-    && rm -rf /var/lib/apt/lists/*
+# RUN apt-get update \
+#     && apt-get install -q -y \
+#     --no-install-recommends \
+#         qt5-default \
+#     && apt-get clean -q -y \
+#     && apt-get autoremove -q -y \
+#     && rm -rf /var/lib/apt/lists/*
+
 # To avoid problem: 
 # invoke-rc.d: could not determine current runlevel
 
